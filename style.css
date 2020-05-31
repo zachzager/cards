@@ -1,0 +1,11 @@
+#cards-container {
+	font-size: 100px;
+}
+
+button {
+	margin: 10px 0 10px 0;
+}
+
+div, h1 {
+	text-align: center;
+}
