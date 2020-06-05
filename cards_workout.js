@@ -114,18 +114,24 @@ let CardModifiers = {
 	
 	// calculate points total using modifiers
 	getPointTotal: function (card, joker_count) {
+		// condition for cards below 5 and above 10	
 		if (card.value in this.card_key) {
-			return this.applyJokers(this.card_key[card.value], joker_count);
+			return this.applyJokers(this.card_key[card.value], joker_count, card.value < 5);
 		}
-		else {
-			return this.applyJokers(card.value, joker_count);
-		}	
+		// standard condition
+		return this.applyJokers(card.value, joker_count);
 	},
 
 	// apply doubling function based on joker count
-	applyJokers: function (value, joker_count) {
+	applyJokers: function (value, joker_count, double_joker_val) {
+		let multiplier = 2;
+
 		if (joker_count > 0) {
-			return value * (2 * joker_count)
+			if (double_joker_val) {
+				multiplier *= 2;	
+			}
+			
+			return value * (multiplier ** joker_count);
 		}
 		return value;
 	}
@@ -135,7 +141,8 @@ let CardModifiers = {
 // Tracks and updates cumulative count of each value
 //
 let ScoringDisplay = {
-	doc_space: document.getElementById("score-container"),
+	score_disp: document.getElementById("score-container"),
+	curr_val_disp: document.getElementById("current-cards-total-container"),
 	points: {
 		spades: 0,
 		diamonds: 0,
@@ -143,18 +150,27 @@ let ScoringDisplay = {
 		hearts: 0
 	},
 	
+	// add new cards to scoring total and display total 	
 	addNewCards: function (card, joker_count) {
-		this.points[card.suit] += CardModifiers.getPointTotal(card, joker_count);
+		points = CardModifiers.getPointTotal(card, joker_count);
+		this.points[card.suit] += points;
+		this.showCurrentValue(points, card["suit"]);
 		this.displayScore();
 	},
 
+	// show the current total card value
+	showCurrentValue: function (points, suit) {
+		this.curr_val_disp.innerHTML = points+suit_symbols[suit];
+	},
+
+	// update score totals
 	displayScore: function () {
 		// remove content if any exists 
-		if (this.doc_space.firstChild) {
-			this.doc_space.innerHTML = "";
+		if (this.score_disp.firstChild) {
+			this.score_disp.innerHTML = "";
 		}
 		
-		this.doc_space.innerHTML = 
+		this.score_disp.innerHTML = 
 			"<div>"+suit_symbols["spades"]+" "+this.points["spades"]+"</div>"+
 			"<div>"+suit_symbols["clubs"]+" "+this.points["clubs"]+"</div>"+
 			"<div>"+suit_symbols["hearts"]+" "+this.points["hearts"]+"</div>"+
