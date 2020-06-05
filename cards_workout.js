@@ -77,12 +77,12 @@ let CardDeck = {
 		}
 	},
 
-	// decrement counter and display card if not at the start of
-	// the deck
-	prevCard: function () {
-		if (this.counter > 0) {
-			this.counter -= 1;
-			this.changeDisplay();
+	// ensure no jokers at the end of the deck
+	noJokersAtEnd: function () {
+		for (let i = this.deck.length-1; this.deck[this.deck.length-1].value === "joker"; i--) {
+			let temp = this.deck[this.deck.length-1];
+			this.deck[this.deck.length-1] = this.deck[i-1];
+			this.deck[i-1] = temp;
 		}
 	},
 
@@ -92,7 +92,8 @@ let CardDeck = {
 		ScoringDisplay.start();
 		this.counter = 0;
 		this.shuffle();
-		this.changeDisplay();	
+		this.noJokersAtEnd();
+		this.changeDisplay();
 	}
 }
 
@@ -147,13 +148,15 @@ let ScoringDisplay = {
 		spades: 0,
 		diamonds: 0,
 		clubs: 0,
-		hearts: 0
+		hearts: 0,
+		jokers: 0
 	},
 	
 	// add new cards to scoring total and display total 	
 	addNewCards: function (card, joker_count) {
 		points = CardModifiers.getPointTotal(card, joker_count);
 		this.points[card.suit] += points;
+		this.points["jokers"] += joker_count;
 		this.showCurrentValue(points, card["suit"]);
 		this.displayScore();
 	},
@@ -174,7 +177,8 @@ let ScoringDisplay = {
 			"<div>"+suit_symbols["spades"]+" "+this.points["spades"]+"</div>"+
 			"<div>"+suit_symbols["clubs"]+" "+this.points["clubs"]+"</div>"+
 			"<div>"+suit_symbols["hearts"]+" "+this.points["hearts"]+"</div>"+
-			"<div>"+suit_symbols["diamonds"]+" "+this.points["diamonds"]+"</div>"
+			"<div>"+suit_symbols["diamonds"]+" "+this.points["diamonds"]+"</div>"+
+			"<div>🃏"+this.points["jokers"]+"</div>"
 	},
 
 	start: function () {
@@ -182,6 +186,7 @@ let ScoringDisplay = {
 		this.points.diamonds = 0;
 		this.points.clubs = 0;
 		this.points.hearts = 0;
+		this.points.jokers = 0;
 		this.displayScore();
 	}
 }
