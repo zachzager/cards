@@ -50,21 +50,12 @@ let CardDeck = {
 
 	// add counter to page
 	displayCounter: function () {
-		//let card_count = document.createElement("div");
-		//card_count.appendChild(document.createTextNode((this.counter+1)+"/"+this.deck.length));
-		//this.cards_counter_space.appendChild(card_count);
 		this.cards_counter_space.innerHTML = (this.counter+1)+"/"+this.deck.length;
 	},
 
 	// Clear card and counter contents, replacing with next or previous
 	changeDisplay: function () {
 		// remove content if any exists 
-		/*
-		if (this.cards_space.firstChild) {
-			this.cards_space.innerHTML = "";
-			this.cards_counter_space.innerHTML
-		}
-		*/	
 		this.displayCard();
 		this.displayCounter();	
 	},
@@ -100,13 +91,19 @@ let CardDeck = {
 //
 // Handles card value modification
 //
-// Potential Idea: make modifiable by user
+// Potential Idea: make modifiable by user, give radio button options
 //
 let CardModifiers = {
 	card_key: {
 		2: 5,
 		3: 5,
 		4: 5,
+		5: 5,
+		6: 6,
+		7: 7,
+		8: 8,
+		9: 9,
+		10: 10,
 		"J": 11,
 		"Q": 12,
 		"K": 13,
@@ -115,23 +112,18 @@ let CardModifiers = {
 	
 	// calculate points total using modifiers
 	getPointTotal: function (card, joker_count) {
-		// condition for cards below 5 and above 10	
-		if (card.value in this.card_key) {
-			return this.applyJokers(this.card_key[card.value], joker_count, card.value < 5);
-		}
-		// standard condition
-		return this.applyJokers(card.value, joker_count);
+		return this.applyJokers(this.card_key[card.value], joker_count, card.value <= 5);
 	},
 
-	// apply doubling function based on joker count
+	// apply doubling function based on joker count.
+	// joker modification = value time 2 to the nth power,
+	// n being the number of jokers
 	applyJokers: function (value, joker_count, double_joker_val) {
 		let multiplier = 2;
-
 		if (joker_count > 0) {
 			if (double_joker_val) {
 				multiplier *= 2;	
 			}
-			
 			return value * (multiplier ** joker_count);
 		}
 		return value;
