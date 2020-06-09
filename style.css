@@ -1,3 +1,8 @@
+body {
+	background-color: black;
+    color: white;
+}
+
 #cards-container {
 	font-size: 100px;
 }
